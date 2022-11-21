@@ -1,10 +1,11 @@
 library(arules)
+library(stringr)
 
 setwd("C:\\Users\\bruno\\OneDrive - NuageIT\\Área de Trabalho\\Mineração de Dados\\T1---DM")
 
-df1 <- read.csv("./_ASSOC_BGFriends_01.csv")
+df1 <- read.csv("./_ASSOC_BGFriends_01.csv", stringsAsFactors = TRUE)
 
-df2 <- read.csv("./_ASSOC_BGFriends_02.csv")
+df2 <- read.csv("./_ASSOC_BGFriends_02.csv", stringsAsFactors = TRUE)
 
 df <- rbind(df1, df2)
 
@@ -17,19 +18,16 @@ for (i in 1:nrow(df)) {
   splited <- unlist(strsplit(name, split = ","))
   names <- c(names, splited)
 }
-names <- unique(names)
-names
+names <- unique(unlist(names))
 
-columns= c(unlist(names), "Win")
-results = data.frame(matrix(nrow = 0, ncol = length(names)+1 )) 
-colnames(results) = columns
-
-results
+columns <- c(names, "Win")
+results <- data.frame(matrix(nrow = 0, ncol = length(names)+1 ), stringsAsFactors = TRUE) 
+colnames(results) <- columns
 
 for (i in 1:nrow(df)) {
-  if (as.numeric(row$Amigos) == as.numeric(row$Oponentes)) {
-    next
-  }
+  # if (row$Amigos == row$Oponentes) {
+  #   next
+  # }
   
   row <- df[i,]
   row$Jogadore.a.s <- str_replace_all(row$Jogadore.a.s,"\xe7", "ç")
@@ -47,21 +45,15 @@ for (i in 1:nrow(df)) {
 
 results[is.na(results)] <- 0
 
-results
+for (i in 1:dim(results)[2]) {
+  results[,i] <- as.factor(results[,i])
+}
 
+results
 
 rules <- apriori(results, 
                  parameter = list(supp = 0.1, conf = 0.9, target = "rules"))
 summary(rules)
-
-
-
-
-
-
-
-
-
 
 
 
