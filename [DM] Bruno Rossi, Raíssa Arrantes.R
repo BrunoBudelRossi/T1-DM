@@ -42,56 +42,19 @@ for (i in 1:nrow(df)) {
     results[i, "Win"] <- isWin
   }
 }
-
 results[is.na(results)] <- 0
 
 for (i in 1:dim(results)[2]) {
   results[,i] <- as.factor(results[,i])
 }
 
-results
+rules <- apriori(results, parameter = list(supp = 0.1, conf = 0.5, target = "rules", minlen = 3, maxlen = 3))
 
-rules <- apriori(results, 
-                 parameter = list(supp = 0.1, conf = 0.9, target = "rules"))
-summary(rules)
+sorted <- sort(rules, by="confidence") # decreasing = FALSE
+
+inspect(sorted)
 
 
-
-# flag <- TRUE
-# for (i in 1:nrow(df)) {
-#   row <- df[i,]
-#   
-#   # testar se é igual
-#   isWin <- row$Amigos > row$Oponentes
-#   
-#   name <- gsub(" ","", row$Jogadore.a.s)
-#   
-#   if (nrow(results) != 0) {
-#     for (j in 1:nrow(results)) {
-#       row2 <- results[j,]
-#       if (name == row2$names) {
-#         if (isWin) {
-#           results[j, 2] <- as.numeric(results[j, 2]) + 1
-#         } else {
-#           results[j, 3] <- as.numeric(results[j, 3]) + 1
-#         }
-#         flag <- FALSE
-#       }
-#     }
-#   }
-#   
-#   if (flag) {
-#     if (isWin) {
-#       results[nrow(results) + 1,] = c(name, 1, 0)
-#     } else {
-#       results[nrow(results) + 1,] = c(name, 0, 1)
-#     }
-#   }
-#   flag <- TRUE
-# }
-# results$wins <- as.numeric(as.character(results$wins))
-# results$defeats <- as.numeric(as.character(results$defeats))
-# orderResults <- results[order(results$wins, decreasing = TRUE),]
 
 
 
