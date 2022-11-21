@@ -25,10 +25,6 @@ results <- data.frame(matrix(nrow = 0, ncol = length(names)+1 ), stringsAsFactor
 colnames(results) <- columns
 
 for (i in 1:nrow(df)) {
-  # if (row$Amigos == row$Oponentes) {
-  #   next
-  # }
-  
   row <- df[i,]
   row$Jogadore.a.s <- str_replace_all(row$Jogadore.a.s,"\xe7", "ç")
   name <- iconv(tolower(gsub(" ","", row$Jogadore.a.s)), to = "ASCII//TRANSLIT")
@@ -48,11 +44,16 @@ for (i in 1:dim(results)[2]) {
   results[,i] <- as.factor(results[,i])
 }
 
-rules <- apriori(results, parameter = list(supp = 0.1, conf = 0.5, target = "rules", minlen = 3, maxlen = 3))
 
-sorted <- sort(rules, by="confidence") # decreasing = FALSE
+rules <- apriori(results, parameter = list(supp = 0.1, conf = 0.5, target = "rules", minlen = 2, maxlen = 2))
+
+resSubset <- subset(rules, rhs %in% "Win=TRUE")
+
+sorted <- sort(resSubset, by="confidence") 
 
 inspect(sorted)
+
+
 
 
 
